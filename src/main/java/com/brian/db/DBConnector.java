@@ -5,15 +5,12 @@
  */
 package com.brian.db;
 
-import com.brian.c2b.C2B;
 import com.brian.c2b.C2BUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.postgresql.util.PSQLException;
 
 /**
  *
@@ -22,7 +19,7 @@ import org.postgresql.util.PSQLException;
 public class DBConnector {
 
     private static final String MYSQL_DB_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String MYSQL_DB_CONNECTION = "jdbc:mysql://localhost/safaricom";
+    private static final String MYSQL_DB_CONNECTION = "jdbc:mysql://localhost:3306/safaricomtest";
     private static final String MYSQL_DB_USER = "root";
     private static final String MYSQL_DB_PASSWORD = "password123";
     private static final String POSTGRES_DB_DRIVER = "org.postgresql.Driver";

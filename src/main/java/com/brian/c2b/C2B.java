@@ -6,36 +6,24 @@
 package com.brian.c2b;
 
 import com.brian.db.DBConnector;
-import com.brian.stk.BodyX;
-import com.brian.stk.CallbackMetadataX;
-import com.brian.stk.ItemX;
-import com.brian.stk.STKCallbackUtilsX;
-import com.brian.stk.StkCallbackX;
-import com.brian.stkcallback.Body;
-import com.brian.stkcallback.STKUtil;
-import com.brian.stkcallback.StkCallback;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.Connection;
+//import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.stream.JsonParser.Event;
 import javax.jws.WebService;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,12 +31,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.json.HTTP;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
 import org.json.simple.parser.ParseException;
 import org.postgresql.util.PSQLException;
+import org.json.JSONObject;
 
 /**
  *
@@ -82,7 +68,7 @@ public class C2B {
         String insertValidationTxn = "INSERT INTO c2b_validation( TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         UUID uuid = UUID.randomUUID();
         try {
-            conn = DBConnector.getPostgresSqlDBConnection();
+            conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertValidationTxn);
             ps.setString(1, c2BUtils.getTransactionType());
             ps.setString(2, c2BUtils.getTransID());
@@ -130,7 +116,7 @@ public class C2B {
         String insertValidationTxn = "INSERT INTO c2b_confirmation( TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
         UUID uuid = UUID.randomUUID();
         try {
-            conn = DBConnector.getPostgresSqlDBConnection();
+            conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertValidationTxn);
             ps.setString(1, c2BUtils.getTransactionType());
             ps.setString(2, c2BUtils.getTransID());
@@ -166,145 +152,106 @@ public class C2B {
         return Response.status(201).entity(confirmationResponse).build();
     }
 
-//    //STK Callback
-//    //localhost:7140/C2B/rest/c2b/stkcallback
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("/stkcallback")
-//    public Response STKCallback(BodyX body) throws PSQLException, SQLException {
-//        STKCallbackUtilsX stkutils = new STKCallbackUtilsX();
-//        ObjectMapper mapper = new ObjectMapper();
-//        StkCallbackX stkcallback = new StkCallbackX();
-////        String MerchantRequestID=stkcallback.getMerchantRequestID();
-////        String CheckoutRequestID=stkcallback.getCheckoutRequestID();
-////        int ResultCode =stkcallback.getResultCode();
-////        String ResultDesc= stkcallback.getResultDesc();
-//        CallbackMetadataX callbackmeta = new CallbackMetadataX();
-////        ItemX item = new ItemX();
-//        String[][] coupleArray = new String[5][2];
-////        coupleArray[0][0] = item.getName();//"Name":"Amount",
-////        coupleArray[0][1] = item.getValue();//"Value":5.00
-////        // Double d = Double.parseDouble(coupleArray[0][1]);
-////        coupleArray[1][0] = item.getName();//"Name":"MpesaReceiptNumber",
-////        coupleArray[1][1] = item.getValue();//"Value":"LIR9F1EXBZ"
-////        coupleArray[2][0] = item.getName();//"Name":"Balance"
-////        //coupleArray[2][1] = item.getValue();
-////        coupleArray[3][0] = item.getName();//"Name":"TransactionDate",
-////        coupleArray[3][1] = item.getValue();// "Value":20170927161352
-////        coupleArray[4][0] = item.getName();//"Name":"PhoneNumber",
-////        coupleArray[4][1] = item.getValue();// "Value":254722000000
-//
-//        PreparedStatement ps = null;
-//        Connection conn = null;
-//        String insertStkcallback = "INSERT INTO stkcallback(uid,MerchantRequestID,CheckoutRequestID,ResultCode,ResultDesc,Amount,MpesaReceiptNumber,Balance,TransactionDate,PhoneNumber) VALUES (?,?,?,?,?,?,?,?,?,?)";
-//        UUID uuid = UUID.randomUUID();
-//        try {
-//            conn = DBConnector.getPostgresSqlDBConnection();
-//            ps = conn.prepareStatement(insertStkcallback);
-//            ps.setString(1, uuid.toString());
-//            ps.setString(2, stkcallback.getMerchantRequestID());
-//            ps.setString(3, stkcallback.getCheckoutRequestID());
-//            ps.setInt(4, stkcallback.getResultCode());
-//            ps.setString(5, stkcallback.getResultDesc());
-//            ps.setString(6, coupleArray[0][1]);
-//            ps.setString(7, coupleArray[1][1]);
-//            ps.setString(8, coupleArray[2][1]);
-//            ps.setString(9, coupleArray[3][1]);
-//            ps.setString(10, coupleArray[4][1]);
-//            int add_detail = ps.executeUpdate();
-//
-//            if (add_detail == 1) {
-//                System.out.println("CONFIRMED: Received " + coupleArray[1][1] + " UUID:" + uuid.toString() + " MerchantRequestID:" + stkcallback.getMerchantRequestID() + " CheckoutID:" + stkcallback.getCheckoutRequestID() + " ResultCode:" + stkcallback.getResultCode() + " ResultDesc:" + stkcallback.getResultDesc() + " MpesaReference:" + coupleArray[1][1]);
-//            } else {
-//                System.out.println("No STK Call back Received");
-//            }
-//
-//            conn.close();
-//        } catch (Exception e) {
-//            Logger logger = Logger.getLogger(C2B.class.getName());
-//            logger.log(Level.SEVERE, e.getMessage(), e);
-//            System.out.println("Error_Message-->" + e.getMessage());
-//        }
-//
-//        String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
-//        System.out.println(stkcallBackResponse);
-//        return Response.status(201).entity(stkcallBackResponse).build();
-//    }
-
-     //STK Callback
-    //localhost:7140/C2B/rest/c2b/STK
+    //localhost:7140/C2B/rest/c2b/stkcallback
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/STK")
-    public Response STK(STKUtil stkutil) throws PSQLException, SQLException {
-       Body body = stkutil.getBody();
-         StkCallback Stkcallback = new StkCallback();
-         String merchantRequestID = Stkcallback.getMerchantRequestID();
-         String checkoutRequestID =  Stkcallback.getCheckoutRequestID();
-         int resultCode = Stkcallback.getResultCode();
-         String resultDesc = Stkcallback.getResultDesc();
-         
-        System.out.println("MerchantRequestID::"+merchantRequestID);
-      
-        System.out.println("CheckoutRequestID::"+checkoutRequestID);
-    
-        System.out.println("ResultCode::"+resultCode);
-       
-        System.out.println("ResultDesc::"+resultDesc);
-       
- 
-        String[][] coupleArray = new String[5][2];
-         //coupleArray[4][1] = item.getValue();// "Value":254722000000
+    @Path("/stkcallback")
+    public Response stkcallback(InputStream in) throws IOException, ParseException, java.text.ParseException {
+        Scanner s = new Scanner(in).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+        System.out.println("======STKCallback======");
+        ObjectMapper mapper = new ObjectMapper();
+        //System.out.println(result);
+        //looping through the json
+        JSONObject jsobject = new JSONObject(result);
+        JSONObject bodyobject = jsobject.getJSONObject("Body");
+        //System.out.println(bodyobject); //prints stkcallback json
+
+        JSONObject stkCallbackobject = bodyobject.getJSONObject("stkCallback");
+
+        String merchantRequestID = stkCallbackobject.getString("MerchantRequestID");
+
+        String checkoutRequestID = stkCallbackobject.getString("CheckoutRequestID");
+
+        int resultCode = stkCallbackobject.getInt("ResultCode");
+
+        String resultDesc = stkCallbackobject.getString("ResultDesc");
+
+        JSONObject callbackMetadataobject = stkCallbackobject.getJSONObject("CallbackMetadata");
+
+        JSONArray itemarray = callbackMetadataobject.getJSONArray("Item");
+
+        //Extracting Amount
+        JSONObject itemobjectloopAmount = itemarray.getJSONObject(0);
+        String amountName = itemobjectloopAmount.getString("Name");
+        double amountValue = itemobjectloopAmount.getDouble("Value");
+
+        //Extracting MpesaReceipt
+        JSONObject itemobjectloopReceipt = itemarray.getJSONObject(1);
+        String receiptName = itemobjectloopReceipt.getString("Name");
+        String receiptValue = itemobjectloopReceipt.getString("Value");
+
+        //Extracting Balance
+        JSONObject itemobjectloopBalance = itemarray.getJSONObject(2);
+        String balanceName = itemobjectloopBalance.getString("Name");
+
+        //Extracting TransactionDate
+        JSONObject itemobjectloopTransactionDate = itemarray.getJSONObject(3);
+        String transactionDateName = itemobjectloopTransactionDate.getString("Name");
+        int transactionDateValue = itemobjectloopTransactionDate.getInt("Value");
+        
+//        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddhhmmss",Locale.ENGLISH);
+//        //TimeZone tz = TimeZone.getTimeZone( "UTC" );
+//        String toParse = Integer.toString(transactionDateValue);
+//        Date date = df.parse(toParse);
+//       String result1 = mapper.writeValueAsString(date);
+        
+                
+        
+        System.out.println("TransactionDateName::" + transactionDateName);
+        System.out.println("TransactionDateValue::" + transactionDateValue);
+
+        //Extracting PhoneNumber
+        JSONObject itemobjectloopPhoneNumber = itemarray.getJSONObject(4);
+        String phoneNumberName = itemobjectloopPhoneNumber.getString("Name");
+        int phoneNumberValue = itemobjectloopPhoneNumber.getInt("Value");
+        System.out.println("PhoneNumberName::" + phoneNumberName);
+        System.out.println("PhoneNumberValue::" + phoneNumberValue);
+
+        System.out.println("======END=======");
 
         PreparedStatement ps = null;
         Connection conn = null;
         String insertStkcallback = "INSERT INTO stkcallback(uid,MerchantRequestID,CheckoutRequestID,ResultCode,ResultDesc,Amount,MpesaReceiptNumber,Balance,TransactionDate,PhoneNumber) VALUES (?,?,?,?,?,?,?,?,?,?)";
         UUID uuid = UUID.randomUUID();
-        System.out.println("UUID::"+uuid);
-//        try {
-//            conn = DBConnector.getPostgresSqlDBConnection();
-//            ps = conn.prepareStatement(insertStkcallback);
-//            ps.setString(1, uuid.toString());
-//            ps.setString(2, stkcallback.getMerchantRequestID());
-//            ps.setString(3, stkcallback.getCheckoutRequestID());
-//            ps.setInt(4, stkcallback.getResultCode());
-//            ps.setString(5, stkcallback.getResultDesc());
- 
-//
-//            if (add_detail == 1) {
-//                System.out.println("CONFIRMED: Received " + coupleArray[1][1] + " UUID:" + uuid.toString() + " MerchantRequestID:" + stkcallback.getMerchantRequestID() + " CheckoutID:" + stkcallback.getCheckoutRequestID() + " ResultCode:" + stkcallback.getResultCode() + " ResultDesc:" + stkcallback.getResultDesc() + " MpesaReference:" + coupleArray[1][1]);
-//            } else {
-//                System.out.println("No STK Call back Received");
-//            }
-//
-//            conn.close();
-//        } catch (Exception e) {
-//            Logger logger = Logger.getLogger(C2B.class.getName());
-//            logger.log(Level.SEVERE, e.getMessage(), e);
-//            System.out.println("Error_Message-->" + e.getMessage());
-//        }
+        try {
+            conn = DBConnector.getPostgresSqlDBConnection();
+            ps = conn.prepareStatement(insertStkcallback);
+            ps.setString(1, uuid.toString());
+            ps.setString(2, merchantRequestID);
+            ps.setString(3, checkoutRequestID);
+            ps.setInt(4, resultCode);
+            ps.setString(5, resultDesc);
+            ps.setDouble(6, amountValue);
+            ps.setString(7, receiptValue);
+            ps.setString(8, balanceName);
+            ps.setInt(9, transactionDateValue);
+            ps.setInt(10, phoneNumberValue);
+            int add_detail = ps.executeUpdate();
 
-        String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
-        System.out.println(stkcallBackResponse);
-        return Response.status(201).entity(stkcallBackResponse).build();
-    }
-    
-    
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/stk3")
-    public Response stk3(InputStream in) throws IOException, ParseException {
-        Scanner s = new Scanner(in).useDelimiter("\\A");
-        String result = s.hasNext() ? s.next() : "";
-        System.out.println("======STKCallback======");
-        System.out.println(result);
-        //looping through the json
-        JSONObject outerObject = new JSONObject();
+            if (add_detail == 1) {
+                System.out.println("STK: TransID " + receiptValue + "| Amount:" + amountValue +  "| TransactionDate:" + transactionDateValue+ "| UUID:" + uuid.toString() + "| MerchantRequestID:" + merchantRequestID + "| CheckoutID:" + checkoutRequestID + "| ResultCode:" + resultCode + "| ResultDesc:" + resultDesc + "| PhoneNumber:" + phoneNumberValue);
+            } else {
+                System.out.println("No STK Call back Received");
+            }
 
-        System.out.println("======END=======");
+            conn.close();
+        } catch (Exception e) {
+            Logger logger = Logger.getLogger(C2B.class.getName());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            System.out.println("Error_Message-->" + e.getMessage());
+        }
         String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
         System.out.println(stkcallBackResponse);
         return Response.status(201).entity(stkcallBackResponse).build();
@@ -318,7 +265,98 @@ public class C2B {
         Scanner s = new Scanner(in).useDelimiter("\\A");
         String result = s.hasNext() ? s.next() : "";
         System.out.println("======B2C======");
-        System.out.println(result);
+        //System.out.println(result);
+        JSONObject jsobject = new JSONObject(result);
+        
+        JSONObject bodyobject = jsobject.getJSONObject("Result");
+        
+        int resultType = bodyobject.getInt("ResultType");
+         
+        int resultCode = bodyobject.getInt("ResultCode");
+         
+        String resultDesc = bodyobject.getString("ResultDesc");
+         
+        String originatorConversationID =  bodyobject.getString("OriginatorConversationID");
+         
+        String conversationID = bodyobject.getString("ConversationID");
+         
+        String transactionID = bodyobject.getString("TransactionID");
+         
+        JSONObject resultParametersObject =  bodyobject.getJSONObject("ResultParameters");
+        JSONArray resultParameterArray =  resultParametersObject.getJSONArray("ResultParameter");
+        
+        JSONObject transactionAmountLoop = resultParameterArray.getJSONObject(0);
+        double transactionAmount = transactionAmountLoop.getDouble("Value");
+         
+        JSONObject transactionReceiptLoop = resultParameterArray.getJSONObject(1);
+        String transactionReceipt = transactionReceiptLoop.getString("Value");
+         
+        JSONObject b2CRecipientIsRegisteredCustomerLoop = resultParameterArray.getJSONObject(2);
+        String b2CRecipientIsRegisteredCustomer = b2CRecipientIsRegisteredCustomerLoop.getString("Value");
+         
+        JSONObject b2CChargesPaidAccountAvailableFundsLoop = resultParameterArray.getJSONObject(3);
+        Double b2CChargesPaidAccountAvailableFunds = b2CChargesPaidAccountAvailableFundsLoop.getDouble("Value");
+         
+        JSONObject receiverPartyPublicNameLoop = resultParameterArray.getJSONObject(4);
+        String receiverPartyPublicName = receiverPartyPublicNameLoop.getString("Value");
+         
+        JSONObject transactionCompletedDateTimeLoop =resultParameterArray.getJSONObject(5);
+        String transactionCompletedDateTime = transactionCompletedDateTimeLoop.getString("Value");
+         
+        JSONObject b2CUtilityAccountAvailableFundsLoop = resultParameterArray.getJSONObject(6);
+        Double b2CUtilityAccountAvailableFunds = b2CUtilityAccountAvailableFundsLoop.getDouble("Value");
+         
+        JSONObject b2CWorkingAccountAvailableFundsLoop = resultParameterArray.getJSONObject(7);
+        Double b2CWorkingAccountAvailableFunds = b2CWorkingAccountAvailableFundsLoop.getDouble("Value");
+         
+        JSONObject referenceData = bodyobject.getJSONObject("ReferenceData");
+        JSONObject referenceItem = referenceData.getJSONObject("ReferenceItem");
+        String queueTimeoutURL = referenceItem.getString("Value");
+        // DB Connection
+        PreparedStatement ps = null;
+        Connection conn = null;
+        
+        String insertB2c = "INSERT INTO b2c(uid,Txdate,ResultType,ResultCode,OriginatorConversationID,ConversationID,TransactionID,TransactionAmount,TransactionReceipt,B2CRecipientIsRegisteredCustomer,B2CChargesPaidAccountAvailableFunds,BeneficiaryName,TxCompletedDateTime,B2CUtilityAccountAvailableFunds,B2CWorkingAccountAvailableFunds,QueueTimeoutURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        
+        UUID uuid = UUID.randomUUID();
+        try {
+            conn = DBConnector.getPostgresSqlDBConnection();
+            ps = conn.prepareStatement(insertB2c);
+            ps.setString(1, uuid.toString());
+            ps.setString(2, APIUtils.currDate());
+            ps.setInt(3, resultType);
+            ps.setInt(4, resultCode);
+            //ps.setString(5, resultDesc);
+            ps.setString(5, originatorConversationID);
+            ps.setString(6, conversationID);
+            ps.setString(7, transactionID);
+            ps.setDouble(8, transactionAmount);
+            ps.setString(9, transactionReceipt);
+            ps.setString(10, b2CRecipientIsRegisteredCustomer);
+            ps.setDouble(11, b2CChargesPaidAccountAvailableFunds);
+            ps.setString(12, receiverPartyPublicName);
+            ps.setString(13, transactionCompletedDateTime);
+            ps.setDouble(14,b2CUtilityAccountAvailableFunds);
+            ps.setDouble(15, b2CWorkingAccountAvailableFunds);
+            ps.setString(16, queueTimeoutURL);
+            
+            int add_detail = ps.executeUpdate();
+            
+
+            if (add_detail == 1) {
+                System.out.println("B2C: TransID " + transactionID + "| Amount:" + transactionAmount +  "| TransactionDate:" + transactionCompletedDateTime+ "| UUID:" + uuid.toString() );
+            } else {
+                System.out.println("No STK Call back Received");
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Logger logger = Logger.getLogger(C2B.class.getName());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            System.out.println("Error_Message-->" + e.getMessage());
+        }
+        //
+        System.out.println("B2C"+ bodyobject);
         System.out.println("======END=======");
         String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
         System.out.println(stkcallBackResponse);
@@ -339,4 +377,6 @@ public class C2B {
         System.out.println(stkcallBackResponse);
         return Response.status(201).entity(stkcallBackResponse).build();
     }
+
+   
 }
