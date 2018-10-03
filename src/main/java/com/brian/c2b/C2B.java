@@ -6,23 +6,20 @@
 package com.brian.c2b;
 
 import com.brian.db.DBConnector;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.sql.Connection;
 //import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+//import java.sql.Date;
 import java.util.Scanner;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.stream.JsonParser.Event;
 import javax.jws.WebService;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -65,25 +62,26 @@ public class C2B {
 
         PreparedStatement ps = null;
         Connection conn = null;
-        String insertValidationTxn = "INSERT INTO c2b_validation( TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertValidationTxn = "INSERT INTO c2b_validation(ArrivalTime, TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
         UUID uuid = UUID.randomUUID();
         try {
             conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertValidationTxn);
-            ps.setString(1, c2BUtils.getTransactionType());
-            ps.setString(2, c2BUtils.getTransID());
-            ps.setDouble(3, c2BUtils.getTransAmount());
-            ps.setString(4, c2BUtils.getBusinessShortCode());
-            ps.setString(5, c2BUtils.getBillRefNumber());
-            ps.setString(6, c2BUtils.getInvoiceNumber());
-            ps.setDouble(7, c2BUtils.getOrgAccountBalance());
-            ps.setString(8, c2BUtils.getThirdPartyTransID());
-            ps.setString(9, c2BUtils.getMsisdn());
-            ps.setString(10, c2BUtils.getFirstName());
-            ps.setString(11, c2BUtils.getMiddleName());
-            ps.setString(12, c2BUtils.getLastName());
-            ps.setString(13, c2BUtils.getTransTime());
-            ps.setString(14, uuid.toString());
+            ps.setString(1, APIUtils.currDate());
+            ps.setString(2, c2BUtils.getTransactionType());
+            ps.setString(3, c2BUtils.getTransID());
+            ps.setDouble(4, c2BUtils.getTransAmount());
+            ps.setString(5, c2BUtils.getBusinessShortCode());
+            ps.setString(6, c2BUtils.getBillRefNumber());
+            ps.setString(7, c2BUtils.getInvoiceNumber());
+            ps.setDouble(8, c2BUtils.getOrgAccountBalance());
+            ps.setString(9, c2BUtils.getThirdPartyTransID());
+            ps.setString(10, c2BUtils.getMsisdn());
+            ps.setString(11, c2BUtils.getFirstName());
+            ps.setString(12, c2BUtils.getMiddleName());
+            ps.setString(13, c2BUtils.getLastName());
+            ps.setString(14, c2BUtils.getTransTime());
+            ps.setString(15, uuid.toString());
             int add_detail = ps.executeUpdate();
 
             if (add_detail == 1) {
@@ -113,25 +111,26 @@ public class C2B {
         ObjectMapper mapper = new ObjectMapper();
         PreparedStatement ps = null;
         Connection conn = null;
-        String insertValidationTxn = "INSERT INTO c2b_confirmation( TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+        String insertValidationTxn = "INSERT INTO c2b_confirmation(ArrivalTime, TransactionType,TransID,TransAmount,BusinessShortCode,BillRefNumber,InvoiceNumber,OrgAccountBalance,ThirdPartyTransID,MSISDN,FirstName,MiddleName,LastName,TransTime,uid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
         UUID uuid = UUID.randomUUID();
         try {
             conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertValidationTxn);
-            ps.setString(1, c2BUtils.getTransactionType());
-            ps.setString(2, c2BUtils.getTransID());
-            ps.setDouble(3, c2BUtils.getTransAmount());
-            ps.setString(4, c2BUtils.getBusinessShortCode());
-            ps.setString(5, c2BUtils.getBillRefNumber());
-            ps.setString(6, c2BUtils.getInvoiceNumber());
-            ps.setDouble(7, c2BUtils.getOrgAccountBalance());
-            ps.setString(8, c2BUtils.getThirdPartyTransID());
-            ps.setString(9, c2BUtils.getMsisdn());
-            ps.setString(10, c2BUtils.getFirstName());
-            ps.setString(11, c2BUtils.getMiddleName());
-            ps.setString(12, c2BUtils.getLastName());
-            ps.setString(13, c2BUtils.getTransTime());
-            ps.setString(14, uuid.toString());
+            ps.setString(1, APIUtils.currDate());
+            ps.setString(2, c2BUtils.getTransactionType());
+            ps.setString(3, c2BUtils.getTransID());
+            ps.setDouble(4, c2BUtils.getTransAmount());
+            ps.setString(5, c2BUtils.getBusinessShortCode());
+            ps.setString(6, c2BUtils.getBillRefNumber());
+            ps.setString(7, c2BUtils.getInvoiceNumber());
+            ps.setDouble(8, c2BUtils.getOrgAccountBalance());
+            ps.setString(9, c2BUtils.getThirdPartyTransID());
+            ps.setString(10, c2BUtils.getMsisdn());
+            ps.setString(11, c2BUtils.getFirstName());
+            ps.setString(12, c2BUtils.getMiddleName());
+            ps.setString(13, c2BUtils.getLastName());
+            ps.setString(14, c2BUtils.getTransTime());
+            ps.setString(15, uuid.toString());
             int add_detail = ps.executeUpdate();
 
             if (add_detail == 1) {
@@ -160,13 +159,11 @@ public class C2B {
     public Response stkcallback(InputStream in) throws IOException, ParseException, java.text.ParseException {
         Scanner s = new Scanner(in).useDelimiter("\\A");
         String result = s.hasNext() ? s.next() : "";
-        System.out.println("======STKCallback======");
+
         ObjectMapper mapper = new ObjectMapper();
-        //System.out.println(result);
-        //looping through the json
+
         JSONObject jsobject = new JSONObject(result);
         JSONObject bodyobject = jsobject.getJSONObject("Body");
-        //System.out.println(bodyobject); //prints stkcallback json
 
         JSONObject stkCallbackobject = bodyobject.getJSONObject("stkCallback");
 
@@ -199,34 +196,19 @@ public class C2B {
         //Extracting TransactionDate
         JSONObject itemobjectloopTransactionDate = itemarray.getJSONObject(3);
         String transactionDateName = itemobjectloopTransactionDate.getString("Name");
-        int transactionDateValue = itemobjectloopTransactionDate.getInt("Value");
-        
-//        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddhhmmss",Locale.ENGLISH);
-//        //TimeZone tz = TimeZone.getTimeZone( "UTC" );
-//        String toParse = Integer.toString(transactionDateValue);
-//        Date date = df.parse(toParse);
-//       String result1 = mapper.writeValueAsString(date);
-        
-                
-        
-        System.out.println("TransactionDateName::" + transactionDateName);
-        System.out.println("TransactionDateValue::" + transactionDateValue);
+        long transactionDateValue = itemobjectloopTransactionDate.getLong("Value");
 
         //Extracting PhoneNumber
         JSONObject itemobjectloopPhoneNumber = itemarray.getJSONObject(4);
         String phoneNumberName = itemobjectloopPhoneNumber.getString("Name");
-        int phoneNumberValue = itemobjectloopPhoneNumber.getInt("Value");
-        System.out.println("PhoneNumberName::" + phoneNumberName);
-        System.out.println("PhoneNumberValue::" + phoneNumberValue);
-
-        System.out.println("======END=======");
+        long phoneNumberValue = itemobjectloopPhoneNumber.getLong("Value");
 
         PreparedStatement ps = null;
         Connection conn = null;
         String insertStkcallback = "INSERT INTO stkcallback(uid,MerchantRequestID,CheckoutRequestID,ResultCode,ResultDesc,Amount,MpesaReceiptNumber,Balance,TransactionDate,PhoneNumber) VALUES (?,?,?,?,?,?,?,?,?,?)";
         UUID uuid = UUID.randomUUID();
         try {
-            conn = DBConnector.getPostgresSqlDBConnection();
+            conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertStkcallback);
             ps.setString(1, uuid.toString());
             ps.setString(2, merchantRequestID);
@@ -236,12 +218,14 @@ public class C2B {
             ps.setDouble(6, amountValue);
             ps.setString(7, receiptValue);
             ps.setString(8, balanceName);
-            ps.setInt(9, transactionDateValue);
-            ps.setInt(10, phoneNumberValue);
+            ps.setLong(9, transactionDateValue);
+            ps.setLong(10, phoneNumberValue);
             int add_detail = ps.executeUpdate();
 
             if (add_detail == 1) {
-                System.out.println("STK: TransID " + receiptValue + "| Amount:" + amountValue +  "| TransactionDate:" + transactionDateValue+ "| UUID:" + uuid.toString() + "| MerchantRequestID:" + merchantRequestID + "| CheckoutID:" + checkoutRequestID + "| ResultCode:" + resultCode + "| ResultDesc:" + resultDesc + "| PhoneNumber:" + phoneNumberValue);
+                System.out.println("======STKCallback======");
+                System.out.println("STK: TransID " + receiptValue + "| Amount:" + amountValue + "| TransactionDate:" + transactionDateValue + "| UUID:" + uuid.toString() + "| MerchantRequestID:" + merchantRequestID + "| CheckoutID:" + checkoutRequestID + "| ResultCode:" + resultCode + "| ResultDesc:" + resultDesc + "| PhoneNumber:" + phoneNumberValue);
+                System.out.println("======END=======");
             } else {
                 System.out.println("No STK Call back Received");
             }
@@ -257,6 +241,7 @@ public class C2B {
         return Response.status(201).entity(stkcallBackResponse).build();
     }
 
+    //localhost:7140/C2B/rest/c2b/b2cresult
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -267,60 +252,60 @@ public class C2B {
         System.out.println("======B2C======");
         //System.out.println(result);
         JSONObject jsobject = new JSONObject(result);
-        
+
         JSONObject bodyobject = jsobject.getJSONObject("Result");
-        
+
         int resultType = bodyobject.getInt("ResultType");
-         
+
         int resultCode = bodyobject.getInt("ResultCode");
-         
+
         String resultDesc = bodyobject.getString("ResultDesc");
-         
-        String originatorConversationID =  bodyobject.getString("OriginatorConversationID");
-         
+
+        String originatorConversationID = bodyobject.getString("OriginatorConversationID");
+
         String conversationID = bodyobject.getString("ConversationID");
-         
+
         String transactionID = bodyobject.getString("TransactionID");
-         
-        JSONObject resultParametersObject =  bodyobject.getJSONObject("ResultParameters");
-        JSONArray resultParameterArray =  resultParametersObject.getJSONArray("ResultParameter");
-        
+
+        JSONObject resultParametersObject = bodyobject.getJSONObject("ResultParameters");
+        JSONArray resultParameterArray = resultParametersObject.getJSONArray("ResultParameter");
+
         JSONObject transactionAmountLoop = resultParameterArray.getJSONObject(0);
         double transactionAmount = transactionAmountLoop.getDouble("Value");
-         
+
         JSONObject transactionReceiptLoop = resultParameterArray.getJSONObject(1);
         String transactionReceipt = transactionReceiptLoop.getString("Value");
-         
+
         JSONObject b2CRecipientIsRegisteredCustomerLoop = resultParameterArray.getJSONObject(2);
         String b2CRecipientIsRegisteredCustomer = b2CRecipientIsRegisteredCustomerLoop.getString("Value");
-         
+
         JSONObject b2CChargesPaidAccountAvailableFundsLoop = resultParameterArray.getJSONObject(3);
         Double b2CChargesPaidAccountAvailableFunds = b2CChargesPaidAccountAvailableFundsLoop.getDouble("Value");
-         
+
         JSONObject receiverPartyPublicNameLoop = resultParameterArray.getJSONObject(4);
         String receiverPartyPublicName = receiverPartyPublicNameLoop.getString("Value");
-         
-        JSONObject transactionCompletedDateTimeLoop =resultParameterArray.getJSONObject(5);
+
+        JSONObject transactionCompletedDateTimeLoop = resultParameterArray.getJSONObject(5);
         String transactionCompletedDateTime = transactionCompletedDateTimeLoop.getString("Value");
-         
+
         JSONObject b2CUtilityAccountAvailableFundsLoop = resultParameterArray.getJSONObject(6);
         Double b2CUtilityAccountAvailableFunds = b2CUtilityAccountAvailableFundsLoop.getDouble("Value");
-         
+
         JSONObject b2CWorkingAccountAvailableFundsLoop = resultParameterArray.getJSONObject(7);
         Double b2CWorkingAccountAvailableFunds = b2CWorkingAccountAvailableFundsLoop.getDouble("Value");
-         
+
         JSONObject referenceData = bodyobject.getJSONObject("ReferenceData");
         JSONObject referenceItem = referenceData.getJSONObject("ReferenceItem");
         String queueTimeoutURL = referenceItem.getString("Value");
         // DB Connection
         PreparedStatement ps = null;
         Connection conn = null;
-        
-        String insertB2c = "INSERT INTO b2c(uid,Txdate,ResultType,ResultCode,OriginatorConversationID,ConversationID,TransactionID,TransactionAmount,TransactionReceipt,B2CRecipientIsRegisteredCustomer,B2CChargesPaidAccountAvailableFunds,BeneficiaryName,TxCompletedDateTime,B2CUtilityAccountAvailableFunds,B2CWorkingAccountAvailableFunds,QueueTimeoutURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        
+
+        String insertB2c = "INSERT INTO b2c(uid,Txdate,ResultType,ResultCode,OriginatorConversationID,ConversationID,TransactionID,TransactionAmount,TransactionReceipt,B2CRecipientIsRegisteredCustomer,B2CChargesPaidAccountAvailableFunds,BeneficiaryName,TxCompletedDateTime,B2CUtilityAccountAvailableFunds,B2CWorkingAccountAvailableFunds,QueueTimeoutURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
         UUID uuid = UUID.randomUUID();
         try {
-            conn = DBConnector.getPostgresSqlDBConnection();
+            conn = DBConnector.getMysqlDBConnection();
             ps = conn.prepareStatement(insertB2c);
             ps.setString(1, uuid.toString());
             ps.setString(2, APIUtils.currDate());
@@ -336,15 +321,14 @@ public class C2B {
             ps.setDouble(11, b2CChargesPaidAccountAvailableFunds);
             ps.setString(12, receiverPartyPublicName);
             ps.setString(13, transactionCompletedDateTime);
-            ps.setDouble(14,b2CUtilityAccountAvailableFunds);
+            ps.setDouble(14, b2CUtilityAccountAvailableFunds);
             ps.setDouble(15, b2CWorkingAccountAvailableFunds);
             ps.setString(16, queueTimeoutURL);
-            
+
             int add_detail = ps.executeUpdate();
-            
 
             if (add_detail == 1) {
-                System.out.println("B2C: TransID " + transactionID + "| Amount:" + transactionAmount +  "| TransactionDate:" + transactionCompletedDateTime+ "| UUID:" + uuid.toString() );
+                System.out.println("B2C: TransID " + transactionID + "| Amount:" + transactionAmount + "| TransactionDate:" + transactionCompletedDateTime + "| UUID:" + uuid.toString());
             } else {
                 System.out.println("No STK Call back Received");
             }
@@ -356,13 +340,14 @@ public class C2B {
             System.out.println("Error_Message-->" + e.getMessage());
         }
         //
-        System.out.println("B2C"+ bodyobject);
+        System.out.println("B2C" + bodyobject);
         System.out.println("======END=======");
         String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
         System.out.println(stkcallBackResponse);
         return Response.status(201).entity(stkcallBackResponse).build();
     }
 
+    //localhost:7140/C2B/rest/c2b/b2bresult
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -371,12 +356,106 @@ public class C2B {
         Scanner s = new Scanner(in).useDelimiter("\\A");
         String result = s.hasNext() ? s.next() : "";
         System.out.println("======B2B======");
-        System.out.println(result);
+        JSONObject jsobject = new JSONObject(result);
+
+        JSONObject bodyobject = jsobject.getJSONObject("Result");
+
+        int resultType = bodyobject.getInt("ResultType");
+
+        int resultCode = bodyobject.getInt("ResultCode");
+
+        String resultDesc = bodyobject.getString("ResultDesc");
+
+        String originatorConversationID = bodyobject.getString("OriginatorConversationID");;
+
+        String conversationID = bodyobject.getString("ConversationID");
+
+        String transactionID = bodyobject.getString("TransactionID");
+
+        JSONObject resultParametersObject = bodyobject.getJSONObject("ResultParameters");
+        JSONArray resultParameterArray = resultParametersObject.getJSONArray("ResultParameter");
+
+        JSONObject initiatorAccountCurrentBalanceLoop = resultParameterArray.getJSONObject(0);
+        String initiatorAccountCurrentBalance = initiatorAccountCurrentBalanceLoop.getString("Value");
+
+        JSONObject debitAccountCurrentBalanceLoop = resultParameterArray.getJSONObject(1);
+        String debitAccountCurrentBalance = debitAccountCurrentBalanceLoop.getString("Value");
+
+        JSONObject amountLoop = resultParameterArray.getJSONObject(2);
+        Double amount = amountLoop.getDouble("Value");
+
+        JSONObject debitPartyAffectedAccountBalanceLoop = resultParameterArray.getJSONObject(3);
+        String debitPartyAffectedAccountBalance = debitPartyAffectedAccountBalanceLoop.getString("Value");
+
+        JSONObject transactionCompletedDateTimeLoop = resultParameterArray.getJSONObject(4);
+        long transactionCompletedDateTime = transactionCompletedDateTimeLoop.getLong("Value");
+
+        JSONObject debitPartyChargesNameLoop = resultParameterArray.getJSONObject(5);
+        String debitPartyChargesName = debitPartyChargesNameLoop.getString("Value");
+
+        JSONObject receiverPartyPublicNameLoop = resultParameterArray.getJSONObject(6);
+        String receiverPartyPublicName = receiverPartyPublicNameLoop.getString("Value");
+
+        JSONObject currencyLoop = resultParameterArray.getJSONObject(7);
+        String currency = currencyLoop.getString("Value");
+
+        JSONObject referenceDataObject = bodyobject.getJSONObject("ReferenceData");
+        JSONArray referenceItemArray = referenceDataObject.getJSONArray("ReferenceItem");
+
+        JSONObject billReferenceNumberLoop = referenceItemArray.getJSONObject(0);
+        String billReferenceNumber = billReferenceNumberLoop.getString("Value");
+
+        JSONObject queueTimeoutURLLoop = referenceItemArray.getJSONObject(1);
+        String queueTimeoutURL = queueTimeoutURLLoop.getString("Value");
+
+        // DB Connection
+        PreparedStatement ps = null;
+        Connection conn = null;
+
+        String insertB2c = "INSERT INTO b2b(uid,Txdate,ResultType,ResultCode,OriginatorConversationID,ConversationID,TransactionID,InitiatorAccountCurrentBalance,DebitAccountCurrentBalance,Amount,DebitPartyAffectedAccountBalance,TransCompletedTime,DebitPartyCharges,ReceiverPartyPublicName,Currency,BillReferenceNumber,QueueTimeoutURL) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        UUID uuid = UUID.randomUUID();
+        try {
+            conn = DBConnector.getMysqlDBConnection();
+            ps = conn.prepareStatement(insertB2c);
+            ps.setString(1, uuid.toString());
+            ps.setString(2, APIUtils.currDate());
+            ps.setInt(3, resultType);
+            ps.setInt(4, resultCode);
+            ps.setString(5, originatorConversationID);
+            ps.setString(6, conversationID);
+            ps.setString(7, transactionID);
+            ps.setString(8, initiatorAccountCurrentBalance);
+            ps.setString(9, debitAccountCurrentBalance);
+            ps.setDouble(10, amount);
+            ps.setString(11, debitPartyAffectedAccountBalance);
+            ps.setLong(12, transactionCompletedDateTime);
+            ps.setString(13, debitPartyChargesName);
+            ps.setString(14, receiverPartyPublicName);
+            ps.setString(15, currency);
+            ps.setString(16, billReferenceNumber);
+            ps.setString(17, queueTimeoutURL);
+
+            int add_detail = ps.executeUpdate();
+
+            if (add_detail == 1) {
+                System.out.println("B2B: TransID: " + transactionID + "| Amount:" + amount + "| TransactionDate:" + transactionCompletedDateTime + "| UUID:" + uuid.toString());
+            } else {
+                System.out.println("No B2B Call back Received");
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Logger logger = Logger.getLogger(C2B.class.getName());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            System.out.println("Error_Message-->" + e.getMessage());
+        }
+        //
+
         System.out.println("======END=======");
         String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
         System.out.println(stkcallBackResponse);
         return Response.status(201).entity(stkcallBackResponse).build();
     }
 
-   
 }
