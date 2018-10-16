@@ -7,6 +7,7 @@ package com.brian.c2b;
 
 import com.brian.db.DBConnector;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -451,11 +452,46 @@ public class C2B {
             System.out.println("Error_Message-->" + e.getMessage());
         }
         //
-
         System.out.println("======END=======");
         String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
         System.out.println(stkcallBackResponse);
         return Response.status(201).entity(stkcallBackResponse).build();
     }
+ //localhost:7140/C2B/rest/c2b/reversal
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/reversal")
+    public Response reversal(InputStream in) throws IOException, ParseException {
+         Scanner s = new Scanner(in).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+        System.out.println("======REVERSAL======");
+        //System.out.println(result);
+        JSONObject jsobject = new JSONObject(result);
 
+        JSONObject bodyobject = jsobject.getJSONObject("Result");
+
+        int resultType = bodyobject.getInt("ResultType");
+
+        int resultCode = bodyobject.getInt("ResultCode");
+
+        String resultDesc = bodyobject.getString("ResultDesc");
+
+        String originatorConversationID = bodyobject.getString("OriginatorConversationID");;
+
+        String conversationID = bodyobject.getString("ConversationID");
+
+        String transactionID = bodyobject.getString("TransactionID");
+        
+        JSONObject referenceData = bodyobject.getJSONObject("ReferenceData");
+        JSONObject referenceItem = referenceData.getJSONObject("ReferenceItem");
+        String queueTimeoutURL = referenceItem.getString("Value");System.out.println(queueTimeoutURL);
+
+        
+        System.out.println("======END=======");
+        String stkcallBackResponse = "{\"ResultDesc\":\"Confirmation received succesfully\",\"ResultCode\":\"0\"}";
+        System.out.println(stkcallBackResponse);
+        return Response.status(200).entity(stkcallBackResponse).build();
+    }
+    
 }

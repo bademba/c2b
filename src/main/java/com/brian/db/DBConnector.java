@@ -20,8 +20,8 @@ public class DBConnector {
 
     private static final String MYSQL_DB_DRIVER = "com.mysql.jdbc.Driver";
     private static final String MYSQL_DB_CONNECTION = "jdbc:mysql://localhost:3306/safaricomtest";
-    private static final String MYSQL_DB_USER = "root";
-    private static final String MYSQL_DB_PASSWORD = "password123";
+    private static final String MYSQL_DB_USER = "apiuser";
+    private static final String MYSQL_DB_PASSWORD = "5V8CL8ll0Fxv0nUfzN0N";
     private static final String POSTGRES_DB_DRIVER = "org.postgresql.Driver";
     private static final String POSTGRES_DB_CONNECTION = "jdbc:postgresql://127.0.0.1:5432/safaricomtest";
     private static final String POSTGRES_DB_USER = "postgres";
